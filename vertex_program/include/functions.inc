@@ -5,11 +5,18 @@
 
 #include "../../shared_program/functions.inc"
 
+// Forward declarations for lighting helpers that are defined later in this
+// file but referenced by a number of shaders before the compiler has seen
+// their bodies.  Older HLSL profiles used by the game are sensitive to the
+// declaration order, so we provide prototypes explicitly to keep fxc happy.
+DiffuseSpecular calculateDiffuseSpecularLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o);
+DiffuseSpecular calculateDiffuseSpecularTerrainLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o);
+
 // ======================================================================
 
 float4 transform3d(float4 vertexPosition_o)
 {
-	return mul(vertexPosition_o, objectWorldCameraProjectionMatrix);
+        return mul(vertexPosition_o, objectWorldCameraProjectionMatrix);
 }
 
 // ----------------------------------------------------------------------
@@ -143,17 +150,27 @@ float3 transformHalfAngle(float3 vertexPosition_o, float3 vertexNormal_o, float4
 
 // ----------------------------------------------------------------------
 
+float3 transformTerrainDot3(float3 vector_o, float3 vertexNormal_o)
+{
+        float3 normal = fastNormalize(vertexNormal_o);
+
+        float3 referenceAxis = (abs(normal.x) < 0.999f) ? float3(1.0f, 0.0f, 0.0f) : float3(0.0f, 1.0f, 0.0f);
+        float3 j = fastNormalize(cross(normal, referenceAxis));
+        float3 i = fastNormalize(cross(j, normal));
+
+        float3 result;
+        result.x = dot(i, vector_o);
+        result.y = dot(j, vector_o);
+        result.z = dot(normal, vector_o);
+
+        return reverseSignAndBias(result);
+}
+
+// ----------------------------------------------------------------------
+
 float3 transformTerrainDot3LightDirection(float3 vertexNormal_o)
 {
-	float3 j = cross(vertexNormal_o, float3(1.0f, 0.0f, 0.0f));
-	float3 i = cross(j, vertexNormal_o);
-
-	float3 result;
-	result.x = dot(i, lightData.dot3[0].direction_o);
-	result.y = dot(j, lightData.dot3[0].direction_o);
-	result.z = dot(vertexNormal_o, lightData.dot3[0].direction_o);
-
-	return reverseSignAndBias(result);
+        return transformTerrainDot3(lightData.dot3[0].direction_o, vertexNormal_o);
 }
 
 // ----------------------------------------------------------------------
@@ -294,9 +311,9 @@ float4 calculateDiffuseLighting(bool dot3, float4 vertexPosition_o, float3 verte
 
 DiffuseSpecular calculateDiffuseSpecularLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o)
 {
-	DiffuseSpecular output;
-	output.diffuse = material.emissiveColor;
-	output.specular = float4(0.0, 0.0, 0.0, 0.0);
+        DiffuseSpecular output;
+        output.diffuse = material.emissiveColor;
+        output.specular = float4(0.0, 0.0, 0.0, 0.0);
 	
 	if (!dot3)
 	{
@@ -317,14 +334,21 @@ DiffuseSpecular calculateDiffuseSpecularLighting(bool dot3, float4 vertexPositio
 	output.diffuse += calculateDiffusePointLight(lightData.point[2], vertexPosition_o, vertexNormal_o);
 	output.diffuse += calculateDiffusePointLight(lightData.point[3], vertexPosition_o, vertexNormal_o);
 
-	return output;
+        return output;
+}
+
+// ----------------------------------------------------------------------
+
+DiffuseSpecular calculateDiffuseSpecularTerrainLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o)
+{
+        return calculateDiffuseSpecularLighting(dot3, vertexPosition_o, vertexNormal_o);
 }
 
 // ----------------------------------------------------------------------
 
 float2 calculateDiffuseSpecularLightingLookupTextureCoordinates(float4 vertexPosition_o, float vertexNormal_o)
 {
-	float2 result;
+        float2 result;
 	
 	// Calculate L.N for light texture lookup
 	result.x = max(0.0f, dot(lightData.dot3[0].direction_o, vertexNormal_o));
