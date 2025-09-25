@@ -1,4 +1,4 @@
-//hlsl vs_1_1
+//hlsl vs_1_1 vs_3_0
 
 #define textureCoordinateSetDOT3	textureCoordinateSet0
 #define textureCoordinateSetNRML	textureCoordinateSet1
