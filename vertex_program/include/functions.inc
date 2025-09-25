@@ -294,9 +294,9 @@ float4 calculateDiffuseLighting(bool dot3, float4 vertexPosition_o, float3 verte
 
 DiffuseSpecular calculateDiffuseSpecularLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o)
 {
-	DiffuseSpecular output;
-	output.diffuse = material.emissiveColor;
-	output.specular = float4(0.0, 0.0, 0.0, 0.0);
+        DiffuseSpecular output;
+        output.diffuse = material.emissiveColor;
+        output.specular = float4(0.0, 0.0, 0.0, 0.0);
 	
 	if (!dot3)
 	{
@@ -317,14 +317,21 @@ DiffuseSpecular calculateDiffuseSpecularLighting(bool dot3, float4 vertexPositio
 	output.diffuse += calculateDiffusePointLight(lightData.point[2], vertexPosition_o, vertexNormal_o);
 	output.diffuse += calculateDiffusePointLight(lightData.point[3], vertexPosition_o, vertexNormal_o);
 
-	return output;
+        return output;
+}
+
+// ----------------------------------------------------------------------
+
+DiffuseSpecular calculateDiffuseSpecularTerrainLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o)
+{
+        return calculateDiffuseSpecularLighting(dot3, vertexPosition_o, vertexNormal_o);
 }
 
 // ----------------------------------------------------------------------
 
 float2 calculateDiffuseSpecularLightingLookupTextureCoordinates(float4 vertexPosition_o, float vertexNormal_o)
 {
-	float2 result;
+        float2 result;
 	
 	// Calculate L.N for light texture lookup
 	result.x = max(0.0f, dot(lightData.dot3[0].direction_o, vertexNormal_o));
