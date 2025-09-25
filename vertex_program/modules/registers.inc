@@ -65,6 +65,9 @@
 #define cUserConstant5                                c57
 #define cUserConstant6                                c58
 #define cUserConstant7                                c59
+#define cExtLtData_parallelSpec_0_tangentColor         c60
+#define cExtLtData_parallelSpec_0_tangentMinusDiffuse  c61
+#define cExtLtData_parallelSpec_0_tangentMinusBack     c62
 #define c0_0                                          c95.x
 #define c0_5                                          c95.y
 #define c1_0                                          c95.z

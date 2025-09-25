@@ -58,6 +58,18 @@ struct DiffuseSpecular
 	float4	specular;
 };
 
+struct ExtendedParallelSpecularLight
+{
+	float4	tangentColor;
+	float4	tangentMinusDiffuse;
+	float4	tangentMinusBack;
+};
+
+struct ExtendedLightData
+{
+	ExtendedParallelSpecularLight parallelSpecular[NumberOfParallelSpecularLights];
+};
+
 static const int NumberOfParallelSpecularLights = 1;
 static const int NumberOfParallelLights         = 2;
 static const int NumberOfPointSpecularLights    = 1;
@@ -88,6 +100,7 @@ float4    fog : register(c10);
 
 Material  material : register(c11);
 LightData lightData : register(c16);
+ExtendedLightData extLightData : register(c60);
 
 float4    textureFactor : register(c44);
 float4    textureFactor2 : register(c45);
