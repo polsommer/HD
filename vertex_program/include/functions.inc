@@ -5,11 +5,18 @@
 
 #include "../../shared_program/functions.inc"
 
+// Forward declarations for lighting helpers that are defined later in this
+// file but referenced by a number of shaders before the compiler has seen
+// their bodies.  Older HLSL profiles used by the game are sensitive to the
+// declaration order, so we provide prototypes explicitly to keep fxc happy.
+DiffuseSpecular calculateDiffuseSpecularLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o);
+DiffuseSpecular calculateDiffuseSpecularTerrainLighting(bool dot3, float4 vertexPosition_o, float3 vertexNormal_o);
+
 // ======================================================================
 
 float4 transform3d(float4 vertexPosition_o)
 {
-	return mul(vertexPosition_o, objectWorldCameraProjectionMatrix);
+        return mul(vertexPosition_o, objectWorldCameraProjectionMatrix);
 }
 
 // ----------------------------------------------------------------------
