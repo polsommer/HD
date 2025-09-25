@@ -143,17 +143,27 @@ float3 transformHalfAngle(float3 vertexPosition_o, float3 vertexNormal_o, float4
 
 // ----------------------------------------------------------------------
 
+float3 transformTerrainDot3(float3 vector_o, float3 vertexNormal_o)
+{
+        float3 normal = fastNormalize(vertexNormal_o);
+
+        float3 referenceAxis = (abs(normal.x) < 0.999f) ? float3(1.0f, 0.0f, 0.0f) : float3(0.0f, 1.0f, 0.0f);
+        float3 j = fastNormalize(cross(normal, referenceAxis));
+        float3 i = fastNormalize(cross(j, normal));
+
+        float3 result;
+        result.x = dot(i, vector_o);
+        result.y = dot(j, vector_o);
+        result.z = dot(normal, vector_o);
+
+        return reverseSignAndBias(result);
+}
+
+// ----------------------------------------------------------------------
+
 float3 transformTerrainDot3LightDirection(float3 vertexNormal_o)
 {
-	float3 j = cross(vertexNormal_o, float3(1.0f, 0.0f, 0.0f));
-	float3 i = cross(j, vertexNormal_o);
-
-	float3 result;
-	result.x = dot(i, lightData.dot3[0].direction_o);
-	result.y = dot(j, lightData.dot3[0].direction_o);
-	result.z = dot(vertexNormal_o, lightData.dot3[0].direction_o);
-
-	return reverseSignAndBias(result);
+        return transformTerrainDot3(lightData.dot3[0].direction_o, vertexNormal_o);
 }
 
 // ----------------------------------------------------------------------
