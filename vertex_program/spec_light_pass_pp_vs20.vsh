@@ -1,4 +1,4 @@
-//hlsl vs_2_0
+//hlsl vs_2_0 vs_3_0
 
 #include "vertex_program/include/vertex_shader_constants.inc"
 #include "vertex_program/include/functions.inc"

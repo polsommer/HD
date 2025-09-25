@@ -1,4 +1,4 @@
-//hlsl vs_2_0
+//hlsl vs_2_0 vs_3_0
 
 #define textureCoordinateSetOPEN	textureCoordinateSet0
 #define DECLARE_textureCoordinateSets	\
